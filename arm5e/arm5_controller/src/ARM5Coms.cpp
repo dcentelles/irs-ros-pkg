@@ -44,11 +44,12 @@ int ARM5Coms::OpenPort(std::string comPort)
  *  Version reading a 51-byte block
 **/
 void ARM5Coms::readMessage()
-{ 
+{
+	 
 	byte buffer[51];
 	//std::cerr << "Reading data..." << std::endl;
-	int bytes_read;
-	do {
+	int bytes_read;		
+/*do {
 		bytes_read=read(rs232_fd,buffer,51); 
 		//std::cerr << "Received package of " << bytes_read << " size." << std::endl;
 		//Ugly hack. Sometimes the arm stops sending back messages and moving until we send zero velocities
@@ -64,19 +65,61 @@ void ARM5Coms::readMessage()
 			sendMessage();
 		}
 		usleep(10000);
-	} while (bytes_read==-1);
+	} while (bytes_read==-1);*/
 
-	printf("%02X %02X\n",buffer[0], buffer[50]);
+	usleep(10000);
+	int cont=0;
+	while(1){
+		cont++;
+		bytes_read=read(rs232_fd, buffer, 1);
+		if(bytes_read == 1 && *buffer ==SOM)
+			break;
+		else{
+			if(bytes_read==-1){
+				/*Channel2.SpeedDemand(Channel2.disDemand(), 0xffff, 0x0fff);
+				Channel1.SpeedDemand(Channel1.disDemand(), 0xffff, 0x0fff);
+				Channel3.SpeedDemand(Channel3.disDemand(), 0xffff, 0x0fff);
+				Channel4.SpeedDemand(Channel4.disDemand(), 0xffff, 0x0fff);
+				Channel5.SpeedDemand(Channel5.disDemand(), 0xffff, 0x0fff);*/
+		
+				Channel2.SpeedDemand(0, 0xffff, 0x0fff);
+                                Channel1.SpeedDemand(0, 0xffff, 0x0fff);
+                                Channel3.SpeedDemand(0, 0xffff, 0x0fff);
+                                Channel4.SpeedDemand(0, 0xffff, 0x0fff);
+                                Channel5.SpeedDemand(0, 0xffff, 0x0fff);
+				sendMessage();
+				usleep(10000);
+			}
+		}
+	}
+	std::cout<<cont<<std::endl;
+	byte *ptr=buffer+1;
+	int bleft= datalength -1;
+	while(bleft>0){
+		bytes_read=read(rs232_fd, ptr, bleft);
+		if(bytes_read>0){
+			ptr+=bytes_read;
+			bleft-=bytes_read;
+		}
+	}
+	bytes_read=datalength;
+
+
+
+
+
+
+	//printf("%02X %02X\n",buffer[0], buffer[50]);
         if (bytes_read==datalength)
         {
-           // std::cerr << "51-byte message received" << std::endl;
+            std::cerr << "51-byte message received" << std::endl;
 	    memcpy(RXDATA,buffer,datalength*sizeof(byte));
-            if (RXDATA[datalength - 1] == EOM && RXDATA[0] == SOM)
+            if(RXDATA[datalength - 1] == EOM && RXDATA[0] == SOM)
             {
-		//std::cerr << "EOM and SOM are correct" << std::endl;
+		std::cerr << "EOM and SOM are correct" << std::endl;
                 if (RXDATA[datalength - 2] == Checksum(RXDATA, datalength - 2))
                 {
-                    //std::cerr << "Checksum is correct. Storing." << std::endl;
+                    std::cerr << "Checksum is correct. Storing." << std::endl;
 
                     int i = 1;
                    
@@ -135,6 +178,7 @@ void ARM5Coms::readMessage()
                 } else msg_complete=false;
             } else msg_complete=false;
         }
+	std::cout<<msg_complete<<std::endl;
 }
 
 /** Reads from the serial port and leaves the message in RXData and ChanneliRX 
