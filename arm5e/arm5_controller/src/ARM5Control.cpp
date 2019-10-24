@@ -78,11 +78,11 @@ ARM5Control::ARM5Control()
   js_rawticks_pub = nh_.advertise<sensor_msgs::JointState>("/arm5e/joint_state_rawticks",1);
   js_rticks_pub = nh_.advertise<sensor_msgs::JointState>("/arm5e/joint_state_rticks",1);
   js_ticks_pub = nh_.advertise<sensor_msgs::JointState>("/arm5e/joint_state_ticks",1);
-  js_ticks_sub = nh_.subscribe<sensor_msgs::JointState>("/arm5e/command_ticks", 10, &ARM5Control::commandTicks, this);
+  js_ticks_sub = nh_.subscribe<sensor_msgs::JointState>("/arm5e/command_ticks", 1, &ARM5Control::commandTicks, this);
   js_length_pub = nh_.advertise<sensor_msgs::JointState>("/arm5e/joint_state_length",1);
-  js_length_sub = nh_.subscribe<sensor_msgs::JointState>("/arm5e/command_length", 10, &ARM5Control::commandlength, this);
+  js_length_sub = nh_.subscribe<sensor_msgs::JointState>("/arm5e/command_length", 1, &ARM5Control::commandlength, this);
   js_angle_pub = nh_.advertise<sensor_msgs::JointState>("/arm5e/joint_state_angle",1);
-  js_angle_sub = nh_.subscribe<sensor_msgs::JointState>("/arm5e/command_angle", 10, &ARM5Control::commandAngle, this);
+  js_angle_sub = nh_.subscribe<sensor_msgs::JointState>("/arm5e/command_angle", 1, &ARM5Control::commandAngle, this);
   PIDService = nh_.advertiseService("/arm5e/setPID", &ARM5Control::setPID_callback, this);
   //ParamService = nh_.advertiseService("/arm5e/setParams", &ARM5Control::setParams_callback, this);
   
@@ -275,6 +275,7 @@ void ARM5Control::commandTicks(const sensor_msgs::JointState::ConstPtr& js)
 	ROS_ERROR("ARM5Control::commandTicks: Input JointState message contains more than 5 values.");
   }
 
+std::cout<<"tick received"<<std::endl;
 }
 
 void ARM5Control::commandlength(const sensor_msgs::JointState::ConstPtr& js)
@@ -585,6 +586,7 @@ int main(int argc, char** argv)
 		if (csipcontrol.offsets_defined) {
 			csipcontrol.js_ticks_pub.publish(js_ticks);
 			csipcontrol.js_length_pub.publish(js_length);
+			js_angle.position[4]=js_angle.position[4]/2;
 			csipcontrol.js_angle_pub.publish(js_angle);
 		}
 

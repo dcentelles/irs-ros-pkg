@@ -4,7 +4,7 @@ int32[] currents
 int32[] waters
 int32[] temps
 int32[] voltages
-int32 master_voltage
-int32 master_temp
-int32 master_current
+float64 master_voltage
+float64 master_temp
+float64 master_current
 int32[] speedErrors

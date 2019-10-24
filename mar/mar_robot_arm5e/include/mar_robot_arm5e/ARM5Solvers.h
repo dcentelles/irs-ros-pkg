@@ -22,7 +22,7 @@
 
 namespace KDL
 {
-class ChainIkSolverVel_pinv_red : public ChainIkSolverVel
+class ChainIkSolverVel_pinv_red : public ChainIkSolverVel_pinv
 {
 public:
 

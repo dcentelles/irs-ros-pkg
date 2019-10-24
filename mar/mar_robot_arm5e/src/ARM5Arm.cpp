@@ -89,7 +89,7 @@ void ARM5Arm::initKinematicSolvers() {
 	armhotstab_chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::RotZ), KDL::Frame().DH( 0.44278, 0.0 ,  0.0    , 5.0*M_PI/180     )));
 	armhotstab_chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::RotZ), KDL::Frame().DH( -0.083 /* gripper pos. changed */,  M_PI_2,  0.0    , 115*M_PI/180     )));
 	armhotstab_chain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::RotZ), KDL::Frame().DH( 0.0, 0,  0.74938    , 0.0     )));
-	armhotstab_ivk_solver=new KDL::ChainIkSolverVel_pinv_red(armhotstab_chain);
+  armhotstab_ivk_solver=new KDL::ChainIkSolverVel_pinv_red(armhotstab_chain);
 }
 
 ARM5Arm::ARM5Arm() : current(0)
@@ -322,6 +322,16 @@ vpColVector ARM5Arm::armIK(vpHomogeneousMatrix &wMe){
 
 }
 vpColVector ARM5Arm::armIK(vpHomogeneousMatrix &wMe,vpColVector maxJointLimits, vpColVector minJointLimits) {
+vpColVector initial_joints(4);
+initial_joints[0]=0;
+initial_joints[1]=M_PI_4;
+initial_joints[2]=M_PI_4;
+initial_joints[3]=0;
+return armIK(wMe, maxJointLimits, minJointLimits, initial_joints);
+
+
+}
+vpColVector ARM5Arm::armIK(vpHomogeneousMatrix &wMe, vpColVector maxJointLimits, vpColVector minJointLimits, vpColVector initial_joints){
 	KDL::JntArray q(chain.getNrOfJoints());
 	KDL::JntArray q_init(chain.getNrOfJoints());
 	KDL::JntArray qmin(chain.getNrOfJoints());
@@ -367,10 +377,10 @@ vpColVector ARM5Arm::armIK(vpHomogeneousMatrix &wMe,vpColVector maxJointLimits, 
 	KDL::ChainIkSolverPos_NR_JL iksolver(chain, qmin, qmax, fksolver,iksolverv,100,1e-6);//Maximum 100 iterations, stop at accuracy 1e-6
 
 	//Initial guess
-	q_init(0)=0;
-	q_init(1)=M_PI_4;
-	q_init(2)=M_PI_4;
-	q_init(3)=0;
+  q_init(0)=initial_joints[0];
+  q_init(1)=initial_joints[1];
+  q_init(2)=initial_joints[2];
+  q_init(3)=initial_joints[3];
 
 	iksolver.CartToJnt(q_init,F_dest,q);
 

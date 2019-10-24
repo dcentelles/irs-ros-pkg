@@ -3,6 +3,7 @@
 namespace KDL {
 
 ChainIkSolverVel_pinv_red::ChainIkSolverVel_pinv_red(const Chain& _chain, double _eps, int _maxiter):
+	ChainIkSolverVel_pinv(_chain),
         				chain(_chain),
         				jnt2jac(chain),
         				jac(chain.getNrOfJoints()),
