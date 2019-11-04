@@ -14,6 +14,7 @@ include_directories(${PROJECT_SOURCE_DIR}/include ${catkin_INCLUDE_DIRS})
 
 add_executable(arm5_init src/arm5_init.cpp)
 target_link_libraries(arm5_init ${catkin_LIBRARIES})
+add_dependencies(${PROJECT_NAME} arm5_controller_generate_messages_cpp)
 
 install(
   TARGETS
