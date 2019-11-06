@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.3)
 project(mar_core)
 
 find_package(catkin REQUIRED COMPONENTS roscpp)
-find_package(VISP REQUIRED)
+#find_package(VISP REQUIRED)
 
 catkin_package(
   INCLUDE_DIRS include
