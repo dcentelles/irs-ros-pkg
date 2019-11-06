@@ -11,7 +11,6 @@ catkin_package(
     roscpp 
   DEPENDS
     Boost
-    VISP
 )
 
 add_definitions(${VISP_DEFINITIONS})
